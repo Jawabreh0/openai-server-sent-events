@@ -38,10 +38,12 @@ function App() {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
+      let fullAssistantMessage = "";
 
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
+
         const chunk = decoder.decode(value);
         const lines = chunk.split("\n\n");
 
@@ -52,14 +54,14 @@ function App() {
               setIsGenerating(false);
               setConversationHistory((prev) => [
                 ...prev,
-                { role: "assistant", content: currentAssistantMessage },
+                { role: "assistant", content: fullAssistantMessage },
               ]);
               setCurrentAssistantMessage("");
-              break;
             } else if (data.startsWith("{")) {
               // Ignore history updates from the server
             } else {
-              setCurrentAssistantMessage((prev) => prev + data);
+              fullAssistantMessage += data;
+              setCurrentAssistantMessage(fullAssistantMessage);
             }
           }
         }
