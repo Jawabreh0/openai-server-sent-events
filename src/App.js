@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./App.css";
 
+const userAvatar = "https://via.placeholder.com/40?text=User";
+const aiAvatar = "https://via.placeholder.com/40?text=AI";
+
 function App() {
   const [userInput, setUserInput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -40,32 +43,35 @@ function App() {
       const decoder = new TextDecoder();
       let fullAssistantMessage = "";
 
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n\n");
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const data = line.slice(6);
-            if (data === "[DONE]") {
-              setIsGenerating(false);
-              setConversationHistory((prev) => [
-                ...prev,
-                { role: "assistant", content: fullAssistantMessage },
-              ]);
-              setCurrentAssistantMessage("");
-            } else if (data.startsWith("{")) {
-              // Ignore history updates from the server
-            } else {
-              fullAssistantMessage += data;
-              setCurrentAssistantMessage(fullAssistantMessage);
+      const processStream = async () => {
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value);
+          const lines = chunk.split("\n\n");
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const data = line.slice(6);
+              if (data === "[DONE]") {
+                setIsGenerating(false);
+                const assistantMessage = fullAssistantMessage;
+                setConversationHistory((prev) => [
+                  ...prev,
+                  { role: "assistant", content: assistantMessage },
+                ]);
+                setCurrentAssistantMessage("");
+              } else if (data.startsWith("{")) {
+                // Ignore history updates from the server
+              } else {
+                fullAssistantMessage += data;
+                setCurrentAssistantMessage(fullAssistantMessage);
+              }
             }
           }
         }
-      }
+      };
+
+      await processStream();
     } catch (error) {
       console.error("Error:", error);
       setIsGenerating(false);
@@ -73,33 +79,46 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <h1>AI Chat</h1>
-      <div className="chat-window" ref={chatWindowRef}>
-        {conversationHistory.map((message, index) => (
-          <div key={index} className={`message ${message.role}`}>
-            <strong>{message.role === "user" ? "You" : "AI"}:</strong>{" "}
-            {message.content}
-          </div>
-        ))}
-        {isGenerating && currentAssistantMessage && (
-          <div className="message assistant">
-            <strong>AI:</strong> {currentAssistantMessage}
-          </div>
-        )}
-      </div>
-      <form onSubmit={handleSubmit} className="input-form">
-        <input
-          type="text"
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          placeholder="Enter your message"
-          disabled={isGenerating}
-        />
-        <button type="submit" disabled={isGenerating}>
-          Send
-        </button>
-      </form>
+    <div className="app">
+      <header className="app-header">
+        <h1>AI Chat Assistant</h1>
+      </header>
+      <main className="chat-container">
+        <div className="chat-window" ref={chatWindowRef}>
+          {conversationHistory.map((message, index) => (
+            <div key={index} className={`message ${message.role}`}>
+              <img
+                src={message.role === "user" ? userAvatar : aiAvatar}
+                alt={`${message.role} avatar`}
+                className="avatar"
+              />
+              <div className="message-content">{message.content}</div>
+            </div>
+          ))}
+          {isGenerating && currentAssistantMessage && (
+            <div className="message assistant">
+              <img src={aiAvatar} alt="AI avatar" className="avatar" />
+              <div className="message-content">{currentAssistantMessage}</div>
+            </div>
+          )}
+        </div>
+        <form onSubmit={handleSubmit} className="input-form">
+          <input
+            type="text"
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            placeholder="Type your message here..."
+            disabled={isGenerating}
+          />
+          <button type="submit" disabled={isGenerating}>
+            {isGenerating ? (
+              <span className="loader"></span>
+            ) : (
+              <span className="send-icon">➤</span>
+            )}
+          </button>
+        </form>
+      </main>
     </div>
   );
 }

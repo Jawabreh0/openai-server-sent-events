@@ -1,58 +1,207 @@
-.App {
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap");
+
+:root {
+  --primary-color: #4a90e2;
+  --secondary-color: #f5f5f5;
+  --text-color: #333333;
+  --background-color: #ffffff;
+  --user-message-color: #e3f2fd;
+  --ai-message-color: #f3f3f3;
+  --border-color: #e0e0e0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  margin: 0;
+  padding: 0;
+}
+
+.app {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  font-family: Arial, sans-serif;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+h1 {
+  color: var(--primary-color);
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.chat-container {
+  background-color: var(--secondary-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px var(--shadow-color);
 }
 
 .chat-window {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 20px;
-  height: 400px;
+  height: 500px;
   overflow-y: auto;
-  margin-bottom: 20px;
-  background-color: #f9f9f9;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .message {
+  display: flex;
+  align-items: flex-start;
   margin-bottom: 15px;
-  padding: 10px;
-  border-radius: 5px;
-  max-width: 80%;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 .user {
-  background-color: #e6f2ff;
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 0 10px;
+}
+
+.message-content {
+  padding: 12px 16px;
+  border-radius: 18px;
+  max-width: 70%;
+}
+
+.user .message-content {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.assistant .message-content {
+  background-color: var(--ai-message-color);
+  color: var(--text-color);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-content {
+  padding: 12px 16px;
+  border-radius: 18px;
+  max-width: 80%;
+  display: inline-block;
+}
+
+.user .message-content {
+  background-color: var(--primary-color);
+  color: white;
   margin-left: auto;
 }
 
-.assistant {
-  background-color: #f0f0f0;
+.assistant .message-content {
+  background-color: var(--ai-message-color);
   margin-right: auto;
+}
+
+.message-role {
+  font-weight: 500;
+  margin-right: 8px;
+  font-size: 0.9rem;
 }
 
 .input-form {
   display: flex;
-  gap: 10px;
+  padding: 20px;
+  background-color: white;
+  border-top: 1px solid var(--border-color);
 }
 
 input[type="text"] {
   flex-grow: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
 }
 
 button {
-  padding: 10px 20px;
-  background-color: #4caf50;
+  background-color: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  margin-left: 10px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button:hover {
+  background-color: #3a7bc8;
 }
 
 button:disabled {
-  background-color: #cccccc;
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.send-icon {
+  font-size: 1.2rem;
+}
+
+.loader {
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #ffffff;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--secondary-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #bdc3c7;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #95a5a6;
 }

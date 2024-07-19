@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 
 const app = express();
 const openai = new OpenAI({
-  apiKey: "your key here",
+  apiKey: "your key goes here :)",
 });
 
 app.use(cors());
